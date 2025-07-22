@@ -16,16 +16,34 @@ export class AIService {
 
     async enhancePrompt(request: PromptRequest): Promise<PromptResponse> {
         try {
-            // 模拟AI增强提示词的逻辑
+            // 调用AI服务
             const enhancedPrompt = await this.callAI(request.input, request.apiKey)
 
             return {
                 enhanced: enhancedPrompt,
                 original: request.input
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('AI服务调用失败:', error)
-            // 返回一个示例增强提示词作为fallback
+
+            // 检查是否是网络错误或API错误，如果是则重新抛出
+            if (
+                error.message?.includes('HTTP error') ||
+                error.message?.includes('fetch') ||
+                error.message?.includes('404') ||
+                error.message?.includes('401') ||
+                error.message?.includes('403') ||
+                error.message?.includes('429') ||
+                error.message?.includes('500') ||
+                error.message?.includes('Invalid response format') ||
+                error.name === 'TypeError' ||
+                error.name === 'NetworkError'
+            ) {
+                // 重新抛出网络和API错误，让上层处理
+                throw error
+            }
+
+            // 只有在其他类型的错误时才使用fallback
             return this.getFallbackResponse(request.input)
         }
     }

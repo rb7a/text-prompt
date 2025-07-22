@@ -105,6 +105,9 @@
 
         <!-- 历史记录模态框 -->
         <HistoryModal :show="showHistory" :history="history" @close="showHistory = false" @select="loadFromHistory" @delete="deleteHistoryItem" @clear-all="clearHistory" />
+
+        <!-- Toast 提示容器 -->
+        <ToastContainer />
     </div>
 </template>
 
@@ -113,6 +116,8 @@ import { ref, computed, onMounted } from 'vue'
 import { AIService } from '../services/aiService'
 import SettingsModal from './SettingsModal.vue'
 import HistoryModal from './HistoryModal.vue'
+import ToastContainer from './ToastContainer.vue'
+import { useToast } from '../composables/useToast'
 import type { PromptResponse } from '../types'
 
 interface HistoryItem extends PromptResponse {
@@ -147,7 +152,8 @@ const settings = ref<Settings>({
     maxHistory: 20
 })
 
-const aiService = new AIService()
+let aiService = new AIService()
+const { success, error: showError, warning, info } = useToast()
 
 // 从localStorage加载历史记录和设置
 onMounted(() => {
@@ -160,6 +166,13 @@ onMounted(() => {
     if (savedSettings) {
         settings.value = { ...settings.value, ...JSON.parse(savedSettings) }
         apiKey.value = settings.value.apiKey
+
+        // 使用保存的设置重新创建 AIService 实例
+        aiService = new AIService({
+            endpoint: settings.value.endpoint,
+            model: settings.value.model,
+            apiKey: settings.value.apiKey
+        })
     }
 
     // 根据设置初始化视图
@@ -197,7 +210,7 @@ const generatePrompt = async () => {
     try {
         result.value = await aiService.enhancePrompt({
             input: inputPrompt.value,
-            apiKey: apiKey.value || undefined
+            apiKey: settings.value.apiKey || undefined
         })
 
         // 保存到历史记录
@@ -212,10 +225,42 @@ const generatePrompt = async () => {
                 history.value = history.value.slice(0, settings.value.maxHistory)
             }
             saveToLocalStorage()
+
+            // 显示成功提示
+            success('生成成功', '提示词已成功生成并保存到历史记录')
         }
-    } catch (err) {
+    } catch (err: any) {
         console.error('生成失败:', err)
-        error.value = '生成失败，请检查网络连接或API配置'
+
+        // 根据错误类型显示不同的提示
+        let errorTitle = '生成失败'
+        let errorMessage = '请检查网络连接或API配置'
+
+        if (err.message?.includes('404')) {
+            errorTitle = 'API接口未找到'
+            errorMessage = '请检查API端点配置是否正确，或联系管理员'
+        } else if (err.message?.includes('401') || err.message?.includes('403')) {
+            errorTitle = 'API密钥无效'
+            errorMessage = '请检查API Key是否正确，或是否有足够的权限'
+        } else if (err.message?.includes('429')) {
+            errorTitle = '请求过于频繁'
+            errorMessage = '请稍后再试，或检查API配额是否充足'
+        } else if (err.message?.includes('500')) {
+            errorTitle = '服务器内部错误'
+            errorMessage = 'AI服务暂时不可用，请稍后重试'
+        } else if (err.message?.includes('timeout') || err.message?.includes('network')) {
+            errorTitle = '网络连接超时'
+            errorMessage = '请检查网络连接，或稍后重试'
+        } else if (err.message?.includes('Invalid response format')) {
+            errorTitle = 'API响应格式错误'
+            errorMessage = '服务返回了意外的数据格式，请检查API配置'
+        }
+
+        // 显示错误提示（不自动关闭，让用户手动关闭）
+        showError(errorTitle, errorMessage, 0)
+
+        // 同时在界面上显示简化的错误信息
+        error.value = errorTitle
     } finally {
         loading.value = false
     }
@@ -234,23 +279,35 @@ const copyToClipboard = async () => {
         setTimeout(() => {
             copied.value = false
         }, 2000)
+
+        // 显示复制成功提示
+        success('复制成功', '提示词已复制到剪贴板')
     } catch (error) {
         console.error('复制失败:', error)
+        showError('复制失败', '无法访问剪贴板，请手动复制内容')
     }
 }
 
 const savePrompt = () => {
     if (!result.value) return
 
-    const blob = new Blob([result.value.enhanced], { type: 'text/plain' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `prompt-${Date.now()}.txt`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    try {
+        const blob = new Blob([result.value.enhanced], { type: 'text/plain' })
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `prompt-${Date.now()}.txt`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+
+        // 显示下载成功提示
+        success('下载成功', '提示词文件已保存到本地')
+    } catch (error) {
+        console.error('下载失败:', error)
+        showError('下载失败', '无法保存文件，请检查浏览器权限')
+    }
 }
 
 const clearAll = () => {
@@ -262,6 +319,9 @@ const clearAll = () => {
 const clearHistory = () => {
     history.value = []
     localStorage.removeItem('prompt-history')
+
+    // 显示清空成功提示
+    info('历史记录已清空', '所有历史记录已被删除')
 }
 
 const deleteHistoryItem = (index: number) => {
@@ -294,7 +354,18 @@ const saveToLocalStorage = () => {
 const updateSettings = (newSettings: Settings) => {
     settings.value = { ...newSettings }
     apiKey.value = newSettings.apiKey
+
+    // 重新创建 AIService 实例以使用新的配置
+    aiService = new AIService({
+        endpoint: newSettings.endpoint,
+        model: newSettings.model,
+        apiKey: newSettings.apiKey
+    })
+
     saveToLocalStorage()
+
+    // 显示设置保存成功提示
+    success('设置已保存', 'API配置已更新并生效')
 }
 </script>
 
