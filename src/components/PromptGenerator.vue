@@ -256,8 +256,8 @@ const generatePrompt = async () => {
             errorMessage = '服务返回了意外的数据格式，请检查API配置'
         }
 
-        // 显示错误提示（不自动关闭，让用户手动关闭）
-        showError(errorTitle, errorMessage, 0)
+        // 显示错误提示（8秒后自动关闭）
+        showError(errorTitle, errorMessage)
 
         // 同时在界面上显示简化的错误信息
         error.value = errorTitle

@@ -41,19 +41,19 @@ export function useToast() {
         }
     }
 
-    const success = (title: string, message?: string, duration?: number) => {
+    const success = (title: string, message?: string, duration: number = 3000) => {
         return showToast({ type: 'success', title, message, duration })
     }
 
-    const error = (title: string, message?: string, duration?: number) => {
-        return showToast({ type: 'error', title, message, duration, autoClose: duration !== 0 })
+    const error = (title: string, message?: string, duration: number = 8000) => {
+        return showToast({ type: 'error', title, message, duration, autoClose: true })
     }
 
-    const warning = (title: string, message?: string, duration?: number) => {
+    const warning = (title: string, message?: string, duration: number = 5000) => {
         return showToast({ type: 'warning', title, message, duration })
     }
 
-    const info = (title: string, message?: string, duration?: number) => {
+    const info = (title: string, message?: string, duration: number = 4000) => {
         return showToast({ type: 'info', title, message, duration })
     }
 
