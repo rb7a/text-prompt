@@ -181,6 +181,13 @@ const resetSettings = () => {
     overflow-y: auto;
     flex: 1;
     min-height: 0;
+    /* 隐藏滚动条 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.modal-body::-webkit-scrollbar {
+    display: none;
 }
 
 .setting-group {

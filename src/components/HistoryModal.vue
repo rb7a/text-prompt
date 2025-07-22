@@ -177,6 +177,13 @@ const formatDate = (timestamp: number) => {
     overflow-y: auto;
     flex: 1;
     min-height: 0;
+    /* 隐藏滚动条 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.modal-body::-webkit-scrollbar {
+    display: none;
 }
 
 .empty-state {
@@ -207,6 +214,13 @@ const formatDate = (timestamp: number) => {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
+    /* 隐藏滚动条 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.history-list::-webkit-scrollbar {
+    display: none;
 }
 
 .history-item {

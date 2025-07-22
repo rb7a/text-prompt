@@ -87,7 +87,16 @@
 
             <!-- 底部信息 -->
             <footer class="footer">
-                <p>© 2025 AI Prompt Generator | 让创意无限可能</p>
+                <div class="footer-content">
+                    <p class="copyright">© 2025 AI Prompt Generator | <a href="https://github.com/liu-ziting/" target="_blank" rel="noopener noreferrer">liuziting</a></p>
+                    <div class="author-info">
+                        <div class="links">
+                            <a href="https://xhs.lz-t.top/" target="_blank" rel="noopener noreferrer" class="footer-link"> 小红书解析 </a>
+                            <span class="link-separator">|</span>
+                            <a href="https://prompt.lz-t.top/" target="_blank" rel="noopener noreferrer" class="footer-link"> 图片转提示词 </a>
+                        </div>
+                    </div>
+                </div>
             </footer>
         </div>
 
@@ -619,6 +628,13 @@ const updateSettings = (newSettings: Settings) => {
     max-height: 500px;
     overflow-y: auto;
     border: 1px solid #e5e7eb;
+    /* 隐藏滚动条 */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.output-content::-webkit-scrollbar {
+    display: none;
 }
 
 .markdown-view pre {
@@ -786,8 +802,80 @@ const updateSettings = (newSettings: Settings) => {
     text-align: center;
     margin-top: 4rem;
     padding: 2rem 0;
-    color: #6b7280;
+    color: rgba(255, 255, 255, 0.8);
     font-size: 0.875rem;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.copyright {
+    margin: 0;
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+a {
+    color: #ffffff;
+    text-decoration: none;
+}
+.author-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.author {
+    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.author-name {
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.links-label {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.footer-link {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.footer-link:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    text-decoration: none;
+}
+
+.link-separator {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.8rem;
+    margin: 0 0.25rem;
 }
 
 /* 响应式设计 */
