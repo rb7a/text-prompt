@@ -70,17 +70,17 @@
                     <div class="feature-card">
                         <div class="feature-icon">⚡</div>
                         <h4 class="feature-title">快速识别</h4>
-                        <p class="feature-desc">只需几秒钟即可获取专业的详细提示词</p>
+                        <p class="feature-desc">智能分析输入内容，秒级生成结构化专业提示词，大幅提升AI响应质量</p>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon">🛡️</div>
-                        <h4 class="feature-title">隐私保护</h4>
-                        <p class="feature-desc">你的输入通过加密传输，确保数据安全和隐私保护</p>
+                        <div class="feature-icon">💎</div>
+                        <h4 class="feature-title">免费无限制</h4>
+                        <p class="feature-desc">完全免费使用，无次数限制，无需注册，开箱即用的提示词优化体验</p>
                     </div>
                     <div class="feature-card">
                         <div class="feature-icon">🎨</div>
                         <h4 class="feature-title">创意无限</h4>
-                        <p class="feature-desc">为AI生成艺术提供完美的提示词</p>
+                        <p class="feature-desc">支持写作、编程、分析、设计等多场景，激发无限创意可能性</p>
                     </div>
                 </div>
             </div>
