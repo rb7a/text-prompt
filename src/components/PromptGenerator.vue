@@ -209,7 +209,7 @@ const generatePrompt = async () => {
 
     try {
         result.value = await aiService.enhancePrompt({
-            input: inputPrompt.value,
+            input: '优化下面提示词：' + inputPrompt.value,
             apiKey: settings.value.apiKey || undefined
         })
 
